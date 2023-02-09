@@ -203,8 +203,8 @@ fn cli() -> Command {
     }
 }
 
-fn convert(fin: &String, fout: &String) -> io::Result<()> {
-    let img = ImageReader::open(fin)?
+fn convert(input: &String, output: &String) -> io::Result<()> {
+    let img = ImageReader::open(input)?
         .decode()
         .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
     let grayscale = img.grayscale();
@@ -214,7 +214,7 @@ fn convert(fin: &String, fout: &String) -> io::Result<()> {
     let mut bin = vec![];
     for y in 0..height / 8 {
         for x in 0..width {
-            let byte = (0..8).rev().fold(0, |acc, shift| {
+            let byte = (0..8).fold(0, |acc, shift| {
                 if raw[x + (y * 8 + shift) * width] > 0 {
                     acc | 1 << shift
                 } else {
@@ -224,5 +224,5 @@ fn convert(fin: &String, fout: &String) -> io::Result<()> {
             bin.push(byte);
         }
     }
-    fs::write(fout, &bin)
+    fs::write(output, &bin)
 }
