@@ -1,0 +1,18 @@
+[package]
+name = "klaptik-cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+klaptik = { git = "https://github.com/dotcypress/klaptik", features = ["fx", "serde"] }
+kvs = { git = "https://github.com/dotcypress/kvs", features = ["serde"] }
+serde = { version = "1.0.140", default-features = false }
+clap = { version = "4.1.4", features = ["cargo"] }
+i2cdev = "0.5.1"
+image = "0.24.5"
+
+[[bin]]
+name = "klaptik"
+path = "src/main.rs"
+test = false
+bench = false
