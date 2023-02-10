@@ -20,109 +20,70 @@ fn main() -> io::Result<()> {
                 use klaptik::Point;
                 use klaptik::RenderRequest;
 
+                fn parse(val: &str) -> u32 {
+                    if val.starts_with("0x") {
+                        u32::from_str_radix(val.trim_start_matches("0x"), 16).unwrap()
+                    } else {
+                        u32::from_str_radix(val, 10).unwrap()
+                    }
+                }
+
                 match _matches.subcommand() {
                     Some(("render", matches)) => {
                         let req = RenderRequest::new(
                             Point::new(
-                                matches.get_one::<String>("X").unwrap().parse().unwrap(),
-                                matches.get_one::<String>("Y").unwrap().parse().unwrap(),
+                                parse(matches.get_one::<String>("X").unwrap()) as _,
+                                parse(matches.get_one::<String>("Y").unwrap()) as _,
                             ),
                             matches
                                 .get_one::<String>("SPRITE")
                                 .unwrap()
                                 .parse()
                                 .unwrap(),
-                            matches.get_one::<String>("GLYPH").unwrap().parse().unwrap(),
+                            parse(matches.get_one::<String>("GLYPH").unwrap()) as _,
                         );
 
                         fx::send_render_request(
                             matches.get_one::<String>("DEVICE").unwrap(),
-                            u16::from_str_radix(
-                                matches
-                                    .get_one::<String>("ADDRESS")
-                                    .unwrap()
-                                    .trim_start_matches("0x"),
-                                16,
-                            )
-                            .unwrap(),
+                            parse(matches.get_one::<String>("ADDRESS").unwrap()) as _,
                             req,
                         );
                     }
                     Some(("read", matches)) => {
                         let val = fx::read_register(
                             matches.get_one::<String>("DEVICE").unwrap(),
-                            u16::from_str_radix(
-                                matches
-                                    .get_one::<String>("ADDRESS")
-                                    .unwrap()
-                                    .trim_start_matches("0x"),
-                                16,
-                            )
-                            .unwrap(),
-                            matches.get_one::<String>("REG").unwrap().parse().unwrap(),
+                            parse(matches.get_one::<String>("ADDRESS").unwrap()) as _,
+                            parse(matches.get_one::<String>("REG").unwrap()) as _,
                         );
-                        println!("{val}");
+                        print!("0x");
+                        for byte in val.to_be_bytes() {
+                            print!("{0:0>2x}", byte);
+                        }
+                        println!("");
                     }
                     Some(("write", matches)) => {
                         fx::write_register(
                             matches.get_one::<String>("DEVICE").unwrap(),
-                            u16::from_str_radix(
-                                matches
-                                    .get_one::<String>("ADDRESS")
-                                    .unwrap()
-                                    .trim_start_matches("0x"),
-                                16,
-                            )
-                            .unwrap(),
-                            matches.get_one::<String>("REG").unwrap().parse().unwrap(),
-                            matches.get_one::<String>("VAL").unwrap().parse().unwrap(),
+                            parse(matches.get_one::<String>("ADDRESS").unwrap()) as _,
+                            parse(matches.get_one::<String>("REG").unwrap()) as _,
+                            parse(matches.get_one::<String>("VAL").unwrap()),
                         );
                     }
                     Some(("upload", matches)) => {
                         fx::upload_sprite(
                             matches.get_one::<String>("DEVICE").unwrap(),
-                            u16::from_str_radix(
-                                matches
-                                    .get_one::<String>("ADDRESS")
-                                    .unwrap()
-                                    .trim_start_matches("0x"),
-                                16,
-                            )
-                            .unwrap(),
-                            matches
-                                .get_one::<String>("SPRITE")
-                                .unwrap()
-                                .parse()
-                                .unwrap(),
-                            matches
-                                .get_one::<String>("GLYPH_WIDTH")
-                                .unwrap()
-                                .parse()
-                                .unwrap(),
-                            matches
-                                .get_one::<String>("GLYPH_HEIGHT")
-                                .unwrap()
-                                .parse()
-                                .unwrap(),
+                            parse(matches.get_one::<String>("ADDRESS").unwrap()) as _,
+                            parse(matches.get_one::<String>("SPRITE").unwrap()) as _,
+                            parse(matches.get_one::<String>("GLYPH_WIDTH").unwrap()) as _,
+                            parse(matches.get_one::<String>("GLYPH_HEIGHT").unwrap()) as _,
                             &fs::read(matches.get_one::<String>("BITMAP").unwrap()).unwrap(),
                         );
                     }
                     Some(("delete", matches)) => {
                         fx::delete_sprite(
                             matches.get_one::<String>("DEVICE").unwrap(),
-                            u16::from_str_radix(
-                                matches
-                                    .get_one::<String>("ADDRESS")
-                                    .unwrap()
-                                    .trim_start_matches("0x"),
-                                16,
-                            )
-                            .unwrap(),
-                            matches
-                                .get_one::<String>("SPRITE")
-                                .unwrap()
-                                .parse()
-                                .unwrap(),
+                            parse(matches.get_one::<String>("ADDRESS").unwrap()) as _,
+                            parse(matches.get_one::<String>("SPRITE").unwrap()) as _,
                         );
                     }
                     _ => {}
