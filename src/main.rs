@@ -35,11 +35,7 @@ fn main() -> io::Result<()> {
                                 parse(matches.get_one::<String>("X").unwrap()) as _,
                                 parse(matches.get_one::<String>("Y").unwrap()) as _,
                             ),
-                            matches
-                                .get_one::<String>("SPRITE")
-                                .unwrap()
-                                .parse()
-                                .unwrap(),
+                            parse(matches.get_one::<String>("SPRITE").unwrap()) as _,
                             parse(matches.get_one::<String>("GLYPH").unwrap()) as _,
                         );
 
