@@ -172,7 +172,7 @@ fn convert(input: &String, output: &String) -> io::Result<()> {
     for y in 0..height / 8 {
         for x in 0..width {
             let byte = (0..8).fold(0, |acc, shift| {
-                if raw[x + (y * 8 + shift) * width] > 0 {
+                if raw[x + (y * 8 + shift) * width] >= 32 {
                     acc | 1 << shift
                 } else {
                     acc
